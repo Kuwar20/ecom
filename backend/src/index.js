@@ -9,12 +9,15 @@ const PORT = process.env.PORT || 3001;
 import { connectDB } from './utils/connDB.js';
 connectDB();
 
+import authRoutes from './routes/authRoutes.js';
+
 // Logging
 import bodyParser from 'body-parser';
 import { logRequestResponse } from '../logger.js';
 app.use(bodyParser.json()); // To parse JSON request bodies
 app.use(logRequestResponse);
 
+app.use('/api/auth', authRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
