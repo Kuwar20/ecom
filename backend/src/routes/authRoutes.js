@@ -2,6 +2,7 @@ import express from 'express';
 const router = express.Router();
 import User from '../models/userSchema.js';
 import bcrypt from 'bcryptjs';
+import { rateLimiter } from '../middlewares/rateLimiter.js'
 
 
 router.post('/register', async (req, res) => {
@@ -40,11 +41,15 @@ router.post('/login', async (req, res) => {
     try {
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(400).json({ error: 'Invalid credentials1' });
+            // User not found, consume an additional point
+            await rateLimiter.consume(req.ip);
+            return res.status(400).json({ error: "User not found, please signup" });
         }
         const isPasswordMatch = await bcrypt.compare(password, user.password);
         if (!isPasswordMatch) {
-            return res.status(400).json({ error: 'Invalid credentials2' });
+            // Wrong password, consume an additional point
+            await rateLimiter.consume(req.ip);
+            return res.status(400).json({ error: "Invalid credentials" });
         }
 
         res.status(200).json({ message: 'User logged in successfully' });
