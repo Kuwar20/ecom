@@ -8,6 +8,9 @@ const PORT = process.env.PORT || 3001;
 // Connect to the database
 import { connectDB } from './utils/connDB.js';
 connectDB();
+
+import redisClient from './utils/redis.js';
+
 import { rateLimiterMiddleware } from './middlewares/rateLimiter.js';
 import authRoutes from './routes/authRoutes.js';
 

@@ -7,6 +7,8 @@ import { rateLimiter } from '../middlewares/rateLimiter.js'
 import jwt from 'jsonwebtoken';
 import authenticateToken from '../middlewares/auth.js';
 
+import redisClient from '../utils/redis.js';
+
 router.post('/register', async (req, res) => {
     const { name, email, password, role, ...additionalItems } = req.body;
 
@@ -41,18 +43,37 @@ router.post('/login', async (req, res) => {
         return res.status(422).json({ error: "Please fill only the required fields" });
     }
     try {
-        const user = await User.findOne({ email });
+        // Check Redis cache first
+        let user = null;
+        const cachedUser = await redisClient.get(`user:${email}`);
+
+        if (cachedUser) {
+            // If user is in Redis cache, parse it
+            user = JSON.parse(cachedUser);
+            console.log('User found in Redis cache');
+        } else {
+            // If not in cache, query the database
+            user = await User.findOne({ email });
+            if (user) {
+                // Store user in Redis cache
+                await redisClient.set(`user:${email}`, JSON.stringify(user), {
+                    EX: 3600 // Expire after 1 hour
+                });
+                console.log('User stored in Redis cache');
+            }
+        }
+
         if (!user) {
-            // User not found, consume an additional point
             await rateLimiter.consume(req.ip);
             return res.status(400).json({ error: "User not found, please signup" });
         }
+
         const isPasswordMatch = await bcrypt.compare(password, user.password);
         if (!isPasswordMatch) {
-            // Wrong password, consume an additional point
             await rateLimiter.consume(req.ip);
             return res.status(400).json({ error: "Invalid credentials" });
         }
+
         const token = jwt.sign({ _id: user._id, role: user.role, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
         res.status(200).json({ message: 'User logged in successfully', token });
     } catch (error) {
@@ -60,6 +81,7 @@ router.post('/login', async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 });
+
 
 router.put('/update', authenticateToken, async (req, res) => {
     const { name, oldPassword, newPassword, ...additionalItems } = req.body;
@@ -104,6 +126,12 @@ router.put('/update', authenticateToken, async (req, res) => {
         }
 
         await user.save();
+
+        // Update Redis cache
+        await redisClient.set(`user:${user.email}`, JSON.stringify(user), {
+            EX: 3600 // Expire after 1 hour
+        });
+
         res.status(200).json({ message: "User updated successfully" });
     } catch (error) {
         console.error(error);
@@ -122,6 +150,9 @@ router.delete('/delete', authenticateToken, async (req, res) => {
         if (!deletedUser) {
             return res.status(400).json({ error: "User not found" });
         }
+
+        await redisClient.del(`user:${deletedUser.email}`);
+
         res.status(200).json({ message: "User deleted successfully" });
 
     } catch (error) {
