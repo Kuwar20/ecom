@@ -111,4 +111,23 @@ router.put('/update', authenticateToken, async (req, res) => {
     }
 });
 
+router.delete('/delete', authenticateToken, async (req, res) => {
+    const authenticatedUserId = req.user._id;
+
+    if (!authenticatedUserId) {
+        return res.status(400).json({ error: "You are not allowed to delete" });
+    }
+    try {
+        const deletedUser = await User.findByIdAndDelete(authenticatedUserId);
+        if (!deletedUser) {
+            return res.status(400).json({ error: "User not found" });
+        }
+        res.status(200).json({ message: "User deleted successfully" });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Something went wrong, please try again" });
+    }
+});
+
 export default router;
