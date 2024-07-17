@@ -42,11 +42,11 @@ const Navbar = () => {
             </div>
 
             {/* Mobile menu */}
-            <div className={`md:hidden ${isOpen ? "block" : "hidden"}`}>
-                <a href="#" className="block py-2 px-7 text-sm hover:bg-gray-200 dark:hover:bg-gray-700">Home</a>
-                <a href="#" className="block py-2 px-7 text-sm hover:bg-gray-200 dark:hover:bg-gray-700">About</a>
-                <a href="#" className="block py-2 px-7 text-sm hover:bg-gray-200 dark:hover:bg-gray-700">Services</a>
-                <a href="#" className="block py-2 px-7 text-sm hover:bg-gray-200 dark:hover:bg-gray-700">Contact</a>
+            <div className={`md:hidden ${isOpen ? "block" : "hidden"} px-2`}>
+                <a href="#" className="block py-2 px-7 rounded-md text-sm hover:bg-gray-200 dark:hover:bg-gray-700">Home</a>
+                <a href="#" className="block py-2 px-7 rounded-md text-sm hover:bg-gray-200 dark:hover:bg-gray-700">About</a>
+                <a href="#" className="block py-2 px-7 rounded-md text-sm hover:bg-gray-200 dark:hover:bg-gray-700">Services</a>
+                <a href="#" className="block py-2 px-7 rounded-md text-sm hover:bg-gray-200 dark:hover:bg-gray-700">Contact</a>
             </div>
         </nav>
     );
