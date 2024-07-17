@@ -2,7 +2,7 @@ import { RateLimiterMemory } from 'rate-limiter-flexible';
 
 // General rate limiter configuration (if needed)
 const generalOpts = {
-    points: 6, // Number of points
+    points: 600, // Number of points 6 for 3 wrong attempts and 6 req per ip
     duration: 15 * 60, // Per 15 minutes
     blockDuration: 15 * 60, // Block for 15 minutes if consumed more than points
 };

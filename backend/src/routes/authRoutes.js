@@ -4,6 +4,8 @@ import User from '../models/userSchema.js';
 import bcrypt from 'bcryptjs';
 import { rateLimiter } from '../middlewares/rateLimiter.js'
 
+import jwt from 'jsonwebtoken';
+import authenticateToken from '../middlewares/auth.js';
 
 router.post('/register', async (req, res) => {
     const { name, email, password, role, ...additionalItems } = req.body;
@@ -51,11 +53,61 @@ router.post('/login', async (req, res) => {
             await rateLimiter.consume(req.ip);
             return res.status(400).json({ error: "Invalid credentials" });
         }
-
-        res.status(200).json({ message: 'User logged in successfully' });
+        const token = jwt.sign({ _id: user._id, role: user.role, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        res.status(200).json({ message: 'User logged in successfully', token });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Server error' });
+    }
+});
+
+router.put('/update', authenticateToken, async (req, res) => {
+    const { name, oldPassword, newPassword, ...additionalItems } = req.body;
+    const authenticatedUserId = req.user._id;
+
+    console.log(req.user);
+
+    if (!name && !oldPassword && !newPassword && Object.keys(additionalItems).length === 0) {
+        return res.status(400).json({ error: "Please provide something to update" });
+    }
+
+    if (Object.keys(additionalItems).length > 0) {
+        return res.status(422).json({ error: "Please provide only the required fields" });
+    }
+
+    try {
+        const user = await User.findById(authenticatedUserId);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        if (name) {
+            user.name = name;
+        }
+
+        if (oldPassword || newPassword) {
+            if (!oldPassword || !newPassword) {
+                return res.status(400).json({ error: "Both old password and new password are required for password update" });
+            }
+
+            const isPasswordMatch = await bcrypt.compare(oldPassword, user.password);
+            if (!isPasswordMatch) {
+                return res.status(400).json({ error: "Old password cannot be same" });
+            }
+
+            if (oldPassword === newPassword) {
+                return res.status(400).json({ error: "New password must be different from the old password" });
+            }
+
+            const hashedPassword = await bcrypt.hash(newPassword, 12);
+            user.password = hashedPassword;
+        }
+
+        await user.save();
+        res.status(200).json({ message: "User updated successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Server error" });
     }
 });
 
