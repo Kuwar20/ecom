@@ -15,7 +15,7 @@ const Signup = () => {
         label: "",
     });
     const navigate = useNavigate();
-
+    
     const checkPasswordStrength = (password) => {
         let strength = 0;
         if (password.length >= 5) strength += 2;
@@ -28,7 +28,7 @@ const Signup = () => {
         let strengthLabel = "Weak";
         if (strength > 3) strengthLabel = "Moderate";
         if (strength > 5) strengthLabel = "Strong";
-
+        
         return { strength, label: strengthLabel };
     };
 
