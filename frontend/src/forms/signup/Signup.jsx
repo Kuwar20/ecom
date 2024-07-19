@@ -2,8 +2,8 @@ import React from "react";
 
 const Signup = () => {
     return (
-        <div className="bg-gray-200 dark:bg-gray-800 min-h-screen flex flex-col justify-center px-3">
-            <div className="bg-white sm:mx-auto sm:max-w-md sm:w-full py-8 px-4 sm:px-10 rounded-lg shadow dark:bg-gray-800 border">
+        <div className="bg-gray-200 dark:bg-gray-800 min-h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-8">
+            <div className="bg-white max-w-md w-full mx-auto py-8 px-4 sm:px-6 rounded-lg shadow-md dark:bg-gray-800 border">
                 <div className="mb-6 text-center">
                     <h1 className="font-bold text-3xl">Login</h1>
                 </div>
@@ -53,7 +53,7 @@ const Signup = () => {
                             <h1 className="text-sm text-center">or continue with</h1>
                         </div>
                         <div className="grid grid-cols-3 gap-4 mt-4">
-                            
+
                             <a
                                 href="#"
                                 className="w-full flex items-center justify-center px-8 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-100"
