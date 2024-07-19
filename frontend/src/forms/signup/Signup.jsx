@@ -8,12 +8,32 @@ const Signup = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [loading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [passwordStrength, setPasswordStrength] = useState({
+        strength: 0,
+        label: "",
+    });
     const navigate = useNavigate();
 
+    const checkPasswordStrength = (password) => {
+        let strength = 0;
+        if (password.length >= 5) strength += 2;
+        if (password.length > 8) strength += 1;
+        if (password.match(/[a-z]+/)) strength += 1;
+        if (password.match(/[A-Z]+/)) strength += 1;
+        if (password.match(/[0-9]+/)) strength += 1;
+        if (password.match(/[$@#&!]+/)) strength += 1;
+
+        let strengthLabel = "Weak";
+        if (strength > 3) strengthLabel = "Moderate";
+        if (strength > 5) strengthLabel = "Strong";
+
+        return { strength, label: strengthLabel };
+    };
+
     const handleSignupForm = async (e) => {
-        setLoading(true);
+        setIsLoading(true);
         e.preventDefault()
         console.log(name, email, password)
         try {
@@ -51,7 +71,7 @@ const Signup = () => {
             toast.error("Something went wrong");
         }
         finally {
-            setLoading(false);
+            setIsLoading(false);
             setEmail("");
             setPassword("");
             setName("");
@@ -73,7 +93,7 @@ const Signup = () => {
                                     type="text"
                                     placeholder="Enter your name"
                                     required
-                                    disabled={loading}
+                                    disabled={isLoading}
                                     value={name}
                                     onChange={(e) => { setName(e.target.value); console.log(e.target.value) }}
                                     className="w-full border-2 p-2.5 rounded-md focus:border-blue-700 focus:outline-none dark:text-black"
@@ -91,7 +111,7 @@ const Signup = () => {
                                         console.log(e.target.value)
                                     }}
                                     required
-                                    disabled={loading}
+                                    disabled={isLoading}
                                     placeholder="Enter your email"
                                     className="w-full border-2 p-2.5 rounded-md focus:border-blue-700 focus:outline-none dark:text-black"
                                 />
@@ -105,8 +125,8 @@ const Signup = () => {
                                     placeholder="Enter your password"
                                     required
                                     value={password}
-                                    disabled={loading}
-                                    onChange={(e) => { setPassword(e.target.value); console.log(e.target.value) }}
+                                    disabled={isLoading}
+                                    onChange={(e) => { setPassword(e.target.value); console.log(e.target.value); setPasswordStrength(checkPasswordStrength(e.target.value)) }}
                                     className="w-full border-2 p-2.5 rounded-md focus:border-blue-700 focus:outline-none dark:text-black"
                                 />
                                 {password && (
@@ -116,6 +136,27 @@ const Signup = () => {
                                         {showPassword ? <FaEye className='h-5 w-5' /> : <FaEyeSlash className='h-5 w-5' />}
                                     </div>
                                 )}
+                                {password && (
+                                    <div className="mt-1.5 p-0.5">
+                                        <div className="w-1/2 bg-gray-200 rounded-full h-1">
+                                            <div
+                                                className={`h-1 rounded-full ${passwordStrength.label === "Weak"
+                                                    ? "bg-red-500"
+                                                    : passwordStrength.label === "Moderate"
+                                                        ? "bg-yellow-500"
+                                                        : "bg-green-500"
+                                                    }`}
+                                                style={{
+                                                    width: `${(passwordStrength.strength / 7) * 100}%`,
+                                                }}
+                                            ></div>
+                                        </div>
+                                        <div className="w-1/2 flex justify-between mt-1">
+                                            <span className="text-xs text-gray-500">Weak</span>
+                                            <span className="text-xs text-gray-500">Strong</span>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <div className="text-sm hover:underline text-right hover:text-blue-600">
@@ -123,9 +164,20 @@ const Signup = () => {
                         </div>
                         <div className="text-white font-bold">
                             <button
-                                disabled={loading}
-                                className="mt-3 w-full p-2.5 rounded-md bg-blue-600 hover:bg-blue-800">
-                                {loading ? "Loading..." : "Signup"}
+                                disabled={isLoading || passwordStrength.label === "Weak"}
+                                className={`
+                                    ${isLoading || passwordStrength.label === "Weak"
+                                        ? "bg-gray-300"
+                                        : "bg-green-500 hover:bg-green-700"
+                                    }
+                                    text-white w-full p-2 rounded-md transition-colors duration-200
+                                `}
+                            >
+                                {isLoading
+                                    ? "Loading..."
+                                    : passwordStrength.label === "Weak"
+                                        ? "Password too weak"
+                                        : "Signup"}
                             </button>
                         </div>
                     </form>
@@ -135,7 +187,6 @@ const Signup = () => {
                             <h1 className="text-sm text-center">or continue with</h1>
                         </div>
                         <div className="grid grid-cols-3 gap-4 mt-4">
-
                             <a
                                 href="#"
                                 className="w-full flex items-center justify-center px-8 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-100"
