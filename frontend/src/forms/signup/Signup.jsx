@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
     const [name, setName] = useState("");
@@ -32,10 +32,28 @@ const Signup = () => {
         return { strength, label: strengthLabel };
     };
 
+    const getButtonMessage = () => {
+        if (isLoading) return "Loading...";
+        if (!name) return "Register";
+        if (!email) return "Email is required";
+        if (!password) return "Password is required";
+        if (passwordStrength.label === "Weak") return "Password is weak";
+        return "Register";
+    };
+    const isButtonDisabled = () => {
+        return (
+            isLoading ||
+            passwordStrength.label === "Weak" ||
+            !name ||
+            !email ||
+            !password
+        );
+    };
+
     const handleSignupForm = async (e) => {
         setIsLoading(true);
-        e.preventDefault()
-        console.log(name, email, password)
+        e.preventDefault();
+        console.log(name, email, password);
         try {
             const response = await fetch("http://localhost:3000/api/auth/register", {
                 method: "POST",
@@ -48,20 +66,20 @@ const Signup = () => {
             console.log(data);
             if (data.message) {
                 // Redirect based on role
-                if (data.role === 'dealer') {
+                if (data.role === "dealer") {
                     toast.success(data.message);
                     setTimeout(() => {
-                        navigate('/dealer');
+                        navigate("/dealer");
                     }, 1000);
-                } else if (data.role === 'admin') {
+                } else if (data.role === "admin") {
                     toast.success(data.message);
                     setTimeout(() => {
-                        navigate('/admin');
+                        navigate("/admin");
                     }, 1000);
                 } else {
                     toast.success(data.message);
                     setTimeout(() => {
-                        navigate('/user');
+                        navigate("/user");
                     }, 1000);
                 }
             } else {
@@ -69,8 +87,7 @@ const Signup = () => {
             }
         } catch (error) {
             toast.error("Something went wrong");
-        }
-        finally {
+        } finally {
             setIsLoading(false);
             setEmail("");
             setPassword("");
@@ -95,7 +112,10 @@ const Signup = () => {
                                     required
                                     disabled={isLoading}
                                     value={name}
-                                    onChange={(e) => { setName(e.target.value); console.log(e.target.value) }}
+                                    onChange={(e) => {
+                                        setName(e.target.value);
+                                        console.log(e.target.value);
+                                    }}
                                     className="w-full border-2 p-2.5 rounded-md focus:border-blue-700 focus:outline-none dark:text-black"
                                 />
                             </div>
@@ -108,7 +128,7 @@ const Signup = () => {
                                     value={email}
                                     onChange={(e) => {
                                         setEmail(e.target.value);
-                                        console.log(e.target.value)
+                                        console.log(e.target.value);
                                     }}
                                     required
                                     disabled={isLoading}
@@ -126,14 +146,23 @@ const Signup = () => {
                                     required
                                     value={password}
                                     disabled={isLoading}
-                                    onChange={(e) => { setPassword(e.target.value); console.log(e.target.value); setPasswordStrength(checkPasswordStrength(e.target.value)) }}
+                                    onChange={(e) => {
+                                        setPassword(e.target.value);
+                                        console.log(e.target.value);
+                                        setPasswordStrength(checkPasswordStrength(e.target.value));
+                                    }}
                                     className="w-full border-2 p-2.5 rounded-md focus:border-blue-700 focus:outline-none dark:text-black"
                                 />
                                 {password && (
                                     <div
                                         className="absolute top-3 right-5 cursor-pointer"
-                                        onClick={() => setShowPassword(!showPassword)}>
-                                        {showPassword ? <FaEye className='h-5 w-5' /> : <FaEyeSlash className='h-5 w-5' />}
+                                        onClick={() => setShowPassword(!showPassword)}
+                                    >
+                                        {showPassword ? (
+                                            <FaEye className="h-5 w-5" />
+                                        ) : (
+                                            <FaEyeSlash className="h-5 w-5" />
+                                        )}
                                     </div>
                                 )}
                                 {password && (
@@ -141,10 +170,10 @@ const Signup = () => {
                                         <div className="w-1/2 bg-gray-200 rounded-full h-1">
                                             <div
                                                 className={`h-1 rounded-full ${passwordStrength.label === "Weak"
-                                                    ? "bg-red-500"
-                                                    : passwordStrength.label === "Moderate"
-                                                        ? "bg-yellow-500"
-                                                        : "bg-green-500"
+                                                        ? "bg-red-500"
+                                                        : passwordStrength.label === "Moderate"
+                                                            ? "bg-yellow-500"
+                                                            : "bg-green-500"
                                                     }`}
                                                 style={{
                                                     width: `${(passwordStrength.strength / 7) * 100}%`,
@@ -160,24 +189,49 @@ const Signup = () => {
                             </div>
                         </div>
                         <div className="text-sm hover:underline text-right hover:text-blue-600">
-                            <a href="" className="font-semibold">Login here</a>
+                            <a href="" className="font-semibold">
+                                Login here
+                            </a>
                         </div>
                         <div className="text-white font-bold">
+                            {/* 
+                            // way 1 to disable button , but not recommended as it is not readable and manageable
                             <button
-                                disabled={isLoading || passwordStrength.label === "Weak"}
-                                className={`
-                                    ${isLoading || passwordStrength.label === "Weak"
-                                        ? "bg-gray-300"
-                                        : "bg-green-500 hover:bg-green-700"
+                                    disabled={isLoading || passwordStrength.label === "Weak" || !name || !email || !password}
+                                    className={`
+                                        ${isLoading || passwordStrength.label === "Weak" || !name || !email || !password
+                                            ? "bg-gray-500"
+                                            : "bg-green-500 hover:bg-green-700"
+                                        }
+                                        text-white w-full p-2 rounded-md transition-colors duration-200
+                                    `}
+                                >
+                                    {isLoading
+                                        ? "Loading..."
+                                        : (passwordStrength.label === "Weak" && !isLoading)
+                                            ? "Password too weak"
+                                            : (!name && !isLoading)
+                                                ? "Name is required"
+                                                : (!email && !isLoading)
+                                                    ? "Email is required"
+                                                    : (!password && !isLoading)
+                                                        ? "Password is required"
+                                                        : "Signup"
                                     }
-                                    text-white w-full p-2 rounded-md transition-colors duration-200
+                                </button>
+                                */}
+                            <button
+                                type="submit"
+                                disabled={isButtonDisabled()}
+                                className={`
+                                ${isButtonDisabled()
+                                        ? "bg-gray-500"
+                                        : "bg-green-600 hover:bg-green-700 cursor-pointer"
+                                    }
+                                    text-white font-semibold w-full p-2.5 rounded-md transition-colors duration-200
                                 `}
                             >
-                                {isLoading
-                                    ? "Loading..."
-                                    : passwordStrength.label === "Weak"
-                                        ? "Password too weak"
-                                        : "Signup"}
+                                {getButtonMessage()}
                             </button>
                         </div>
                     </form>
@@ -217,10 +271,8 @@ const Signup = () => {
                                     alt="Twitter"
                                 />
                             </a>
-
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
