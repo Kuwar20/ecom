@@ -2,8 +2,8 @@ import React from "react";
 
 const Signup = () => {
     return (
-        <div className="bg-gray-200 dark:bg-gray-800 min-h-screen flex flex-col justify-center">
-            <div className="bg-white sm:mx-auto sm:max-w-md sm:w-full py-8 px-4 sm:px-10 sm:rounded-md shadow dark:bg-gray-800 border">
+        <div className="bg-gray-200 dark:bg-gray-800 min-h-screen flex flex-col justify-center px-3">
+            <div className="bg-white sm:mx-auto sm:max-w-md sm:w-full py-8 px-4 sm:px-10 rounded-lg shadow dark:bg-gray-800 border">
                 <div className="mb-6 text-center">
                     <h1 className="font-bold text-3xl">Login</h1>
                 </div>
