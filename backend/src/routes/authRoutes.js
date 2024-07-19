@@ -9,90 +9,204 @@ import authenticateToken from '../middlewares/auth.js';
 
 import redisClient from '../utils/redis.js';
 
-// router.post('/register', async (req, res) => {
-//     const { name, email, password, role, ...additionalItems } = req.body;
+import dotenv from 'dotenv';
+dotenv.config();
 
-//     if (!name || !email || !password || !role) {
-//         return res.status(400).json({ error: 'Please fill all fields' });
-//     }
-//     if (Object.keys(additionalItems).length > 0) {
-//         return res.status(422).json({ error: "Please fill only the required fields" });
-//     }
-//     try {
-//         const userExists = await User.findOne({ email });
-//         if (userExists) {
-//             return res.status(400).json({ error: 'User already exists' });
-//         }
-//         const hashedPassword = await bcrypt.hash(password, 12);
-//         const newUser = new User({ name, email, password: hashedPassword, role });
-//         await newUser.save();
-//         res.status(201).json({ message: 'User created successfully' });
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ error: 'Registration failed' });
-//     }
-// });
+import { OAuth2Client } from 'google-auth-library';
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 router.post('/register', async (req, res) => {
-    const { name, email, password, ...additionalItems } = req.body;
+    const { name, email, password, googleToken } = req.body;
 
-    if (!name || !email || !password) {
-        return res.status(400).json({ error: 'Please fill all fields' });
-    }
-    if (Object.keys(additionalItems).length > 0) {
-        return res.status(422).json({ error: "Please fill only the required fields" });
-    }
     try {
-        const userExists = await User.findOne({ email });
-        if (userExists) {
-            return res.status(400).json({ error: 'User already exists' });
-        }
+        let user;
 
-        let role = 'user'; // Default role
-        if (email.endsWith('@dealer.com')) {
-            role = 'dealer';
-        } else if (email.endsWith('@admin.com')) {
-            role = 'admin';
-        }
+        if (googleToken) {
+            console.log('Google token:', googleToken);
+            // Google Sign-In
+            const ticket = await client.verifyIdToken({
+                idToken: googleToken,
+                audience: process.env.GOOGLE_CLIENT_ID,
+            });
+            const payload = ticket.getPayload();
+            const googleEmail = payload['email'];
+            const googleName = payload['name'];
 
-        const hashedPassword = await bcrypt.hash(password, 12);
-        const newUser = new User({ name, email, password: hashedPassword, role });
-        await newUser.save();
-        res.status(201).json({ message: 'User created successfully' });
+            user = await User.findOne({ email: googleEmail });
+            if (user) {
+                // User already exists, you might want to update some information here
+                // or just return the existing user
+            } else {
+                let role = 'user';
+                if (googleEmail.endsWith('@dealer.com')) {
+                    role = 'dealer';
+                } else if (googleEmail.endsWith('@admin.com')) {
+                    role = 'admin';
+                }
+
+                user = new User({
+                    name: googleName,
+                    email: googleEmail,
+                    isGoogleAccount: true,
+                    role,
+                    password:'defaultGooglePassword'  // Set a default password or handle it differently in your schema
+                });
+                await user.save();
+            }
+        } else {
+            // Traditional registration
+            if (!name || !email || !password) {
+                return res.status(400).json({ error: 'Please fill all fields' });
+            }
+
+            const userExists = await User.findOne({ email });
+            if (userExists) {
+                return res.status(400).json({ error: 'User already exists' });
+            }
+
+            let role = 'user';
+            if (email.endsWith('@dealer.com')) {
+                role = 'dealer';
+            } else if (email.endsWith('@admin.com')) {
+                role = 'admin';
+            }
+
+            const hashedPassword = await bcrypt.hash(password, 12);
+            user = new User({ name, email, password: hashedPassword, role });
+            await user.save();
+        }
+        
+        res.status(201).json({ 
+            message: 'User created successfully', 
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Registration failed' });
     }
 });
 
+// how to get google token
+
+// router.post('/login', async (req, res) => {
+//     const { email, password, googleToken } = req.body;
+//     console.log(email, password, googleToken);
+//     if ((!email || !password) && !googleToken) {
+//         return res.status(400).json({ message: 'Please provide email and password or Google token' });
+//     }
+
+//     try {
+//         // Check Redis cache first
+//         let user = null;
+//         const cachedUser = await redisClient.get(`user:${email}`);
+
+//         if (cachedUser) {
+//             user = JSON.parse(cachedUser);
+//             console.log('User found in Redis cache');
+//         } else {
+//             user = await User.findOne({ email });
+//             if (user) {
+//                 await redisClient.set(`user:${email}`, JSON.stringify(user), {
+//                     EX: 3600 // Expire after 1 hour
+//                 });
+//                 console.log('User stored in Redis cache');
+//             }
+//         }
+
+//         if (!user) {
+//             await rateLimiter.consume(req.ip);
+//             return res.status(400).json({ error: "User not found, please signup" });
+//         }
+
+//         let isAuthenticated = false;
+
+//         if (googleToken) {
+//             // Google Sign-In
+//             console.log('Google token:', googleToken);
+//             try {
+//                 const ticket = await client.verifyIdToken({
+//                     idToken: googleToken,
+//                     audience: process.env.GOOGLE_CLIENT_ID,
+//                 });
+//                 const payload = ticket.getPayload();
+//                 if (payload['email'] === user.email) {
+//                     isAuthenticated = true;
+//                 }
+//             } catch (error) {
+//                 console.error('Error verifying Google token:', error);
+//                 return res.status(400).json({ error: "Invalid Google token" });
+//             }
+//         } else {
+//             // Traditional login
+//             isAuthenticated = await bcrypt.compare(password, user.password);
+//         }
+
+//         if (!isAuthenticated) {
+//             await rateLimiter.consume(req.ip);
+//             console.log(password, user.password);
+//             return res.status(400).json({ error: "Invalid credentials" });
+//         }
+
+//         const token = jwt.sign({ _id: user._id, role: user.role, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+//         res.status(200).json({ message: 'User logged in successfully', token });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ error: 'Server error' });
+//     }
+// });
 
 router.post('/login', async (req, res) => {
-    const { email, password, ...additionalItems } = req.body;
+    const { email, password, googleToken } = req.body;
+    console.log(email, password, googleToken);
 
-    if (!email || !password) {
-        return res.status(400).json({ message: 'Please fill all fields' });
+    if (!googleToken && (!email || !password)) {
+        return res.status(400).json({ message: 'Please provide email and password or Google token' });
     }
-    if (Object.keys(additionalItems).length > 0) {
-        return res.status(422).json({ error: "Please fill only the required fields" });
-    }
+
     try {
-        // Check Redis cache first
         let user = null;
-        const cachedUser = await redisClient.get(`user:${email}`);
 
-        if (cachedUser) {
-            // If user is in Redis cache, parse it
-            user = JSON.parse(cachedUser);
-            console.log('User found in Redis cache');
-        } else {
-            // If not in cache, query the database
-            user = await User.findOne({ email });
-            if (user) {
-                // Store user in Redis cache
-                await redisClient.set(`user:${email}`, JSON.stringify(user), {
-                    EX: 3600 // Expire after 1 hour
+        if (googleToken) {
+            // Google Sign-In
+            console.log('Google token:', googleToken);
+            try {
+                const ticket = await client.verifyIdToken({
+                    idToken: googleToken,
+                    audience: process.env.GOOGLE_CLIENT_ID,
                 });
-                console.log('User stored in Redis cache');
+                const payload = ticket.getPayload();
+                user = await User.findOne({ email: payload['email'] });
+
+                if (user) {
+                    await redisClient.set(`user:${user.email}`, JSON.stringify(user), {
+                        EX: 3600 // Expire after 1 hour
+                    });
+                    console.log('User stored in Redis cache');
+                }
+            } catch (error) {
+                console.error('Error verifying Google token:', error);
+                return res.status(400).json({ error: "Invalid Google token" });
+            }
+        } else {
+            // Check Redis cache first
+            const cachedUser = await redisClient.get(`user:${email}`);
+
+            if (cachedUser) {
+                user = JSON.parse(cachedUser);
+                console.log('User found in Redis cache');
+            } else {
+                user = await User.findOne({ email });
+                if (user) {
+                    await redisClient.set(`user:${email}`, JSON.stringify(user), {
+                        EX: 3600 // Expire after 1 hour
+                    });
+                    console.log('User stored in Redis cache');
+                }
             }
         }
 
@@ -101,16 +215,26 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ error: "User not found, please signup" });
         }
 
-        const isPasswordMatch = await bcrypt.compare(password, user.password);
-        if (!isPasswordMatch) {
+        let isAuthenticated = false;
+
+        if (googleToken) {
+            // If Google token is used, assume authentication is successful if user is found
+            isAuthenticated = true;
+        } else {
+            // Traditional login
+            isAuthenticated = await bcrypt.compare(password, user.password);
+        }
+
+        if (!isAuthenticated) {
             await rateLimiter.consume(req.ip);
+            console.log(password, user.password);
             return res.status(400).json({ error: "Invalid credentials" });
         }
 
         const token = jwt.sign({ _id: user._id, role: user.role, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
         res.status(200).json({ message: 'User logged in successfully', token });
     } catch (error) {
-        console.error(error);
+        console.error('Server error:', error);
         res.status(500).json({ error: 'Server error' });
     }
 });

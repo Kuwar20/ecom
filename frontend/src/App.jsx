@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import SignupForm from './forms/signup/Signup';
+import Login from './forms/login/Login';
 
 function App() {
   return (
@@ -11,6 +12,8 @@ function App() {
         <Routes>
           <Route path="/" element={<div>Home</div>} />
           <Route path="/signup" element={<SignupForm />} />
+          <Route path="/login" element={<Login/>} />
+          <Route path="*" element={<div>Not Found</div>} />
         </Routes>
       </BrowserRouter>
     </div>
