@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const Signup = () => {
@@ -8,6 +9,7 @@ const Signup = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
 
     const handleSignupForm = async (e) => {
@@ -97,9 +99,9 @@ const Signup = () => {
                         </div>
                         <div>
                             <label className="text-sm font-semibold">Password</label>
-                            <div className="mt-1">
+                            <div className="relative mt-1">
                                 <input
-                                    type="password"
+                                    type={showPassword ? "text" : "password"}
                                     placeholder="Enter your password"
                                     required
                                     value={password}
@@ -107,6 +109,13 @@ const Signup = () => {
                                     onChange={(e) => { setPassword(e.target.value); console.log(e.target.value) }}
                                     className="w-full border-2 p-2.5 rounded-md focus:border-blue-700 focus:outline-none dark:text-black"
                                 />
+                                {password && (
+                                    <div
+                                        className="absolute top-3 right-5 cursor-pointer"
+                                        onClick={() => setShowPassword(!showPassword)}>
+                                        {showPassword ? <FaEye className='h-5 w-5' /> : <FaEyeSlash className='h-5 w-5' />}
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <div className="text-sm hover:underline text-right hover:text-blue-600">
