@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -182,9 +182,9 @@ const Signup = () => {
                                 </div>
                             </div>
                             <div className="text-sm hover:underline text-right hover:text-blue-600">
-                                <a href="" className="font-semibold">
-                                    Login here
-                                </a>
+                                <Link to='/signup' className="font-semibold">
+                                    Create Account here
+                                </Link>
                             </div>
                             <div className="text-white font-bold">
                                 {/* 
