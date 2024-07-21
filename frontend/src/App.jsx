@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Loader from './components/Loader';
 import Navbar from './components/Navbar';
+const Hero = lazy(() => import('./pages/Hero'));
 const SignupForm = lazy(() => import('./forms/signup/Signup'));
 const Login = lazy(() => import('./forms/login/Login'));
 
@@ -12,7 +13,7 @@ function App() {
         <Suspense fallback={<Loader />}>
           <Navbar />
           <Routes>
-            <Route path="/" element={<div>Home</div>} />
+            <Route path="/" element={<Hero/>} />
             <Route path="/signup" element={<SignupForm />} />
             <Route path="/login" element={<Login />} />
             <Route path="*" element={<div>Not Found</div>} />
