@@ -1,55 +1,47 @@
-import React, { useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import 'locomotive-scroll/dist/locomotive-scroll.css';
+import React, { useEffect } from 'react';
+import gsap from 'gsap'; // Import GSAP
+import './InfiniteMarquee.css';
 
-gsap.registerPlugin(ScrollTrigger);
-
-const InfiniteMarquee = ({ text }) => {
-    const marqueeRef = useRef(null);
-
+const InfiniteMarquee = () => {
     useEffect(() => {
-        const marqueeElement = marqueeRef.current;
+        const rows = document.querySelectorAll(".cb-tagreel-row");
 
-        // Clone the content for seamless looping
-        marqueeElement.innerHTML += marqueeElement.innerHTML;
+        rows.forEach((e, i) => {
+            let rowWidth = e.getBoundingClientRect().width;
+            let rowItemWidth = e.children[0].getBoundingClientRect().width;
+            let initialOffset = ((2 * rowItemWidth) / rowWidth) * 100 * -1;
+            let xTranslation = initialOffset * -1;
 
-        const animation = gsap.to(marqueeElement, {
-            x: "-50%",
-            ease: "none",
-            duration: 20,
-            repeat: -1,
+            gsap.set(e, {
+                xPercent: initialOffset
+            });
+
+            let duration = 5 * (i + 1);
+
+            var tl = gsap.timeline();
+
+            tl.to(e, {
+                ease: "none",
+                duration: duration,
+                xPercent: 0,
+                repeat: -1
+            });
         });
-
-        // Pause animation when out of viewport
-        ScrollTrigger.create({
-            trigger: marqueeElement,
-            start: "top bottom",
-            end: "bottom top",
-            onEnter: () => animation.play(),
-            onLeave: () => animation.pause(),
-            onEnterBack: () => animation.play(),
-            onLeaveBack: () => animation.pause(),
-        });
-
-        // Cleanup function
-        return () => {
-            animation.kill();
-            ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-        };
     }, []);
 
     return (
-        <div className="w-full overflow-hidden bg-gray-100 dark:bg-gray-700 py-10">
-            <div ref={marqueeRef} className="flex whitespace-nowrap">
-                {[...Array(10)].map((_, index) => (
-                    <span key={index} className="text-4xl font-bold px-10 text-gray-800 dark:text-gray-200">
-                        {text}
-                    </span>
-                ))}
+        <div className="cb-tagreel-content">
+            <div className="cb-tagreel-items" role="marquee">
+                <div className="cb-tagreel-row">
+                    <div className="cb-tagreel-item"><span>FASHION</span></div>
+                    <div className="cb-tagreel-item -stroke"><span>FASHION</span></div>
+                    <div className="cb-tagreel-item"><span>FASHION</span></div>
+                    <div className="cb-tagreel-item -stroke"><span>FASHION</span></div>
+                    <div className="cb-tagreel-item"><span>FASHION</span></div>
+                </div>
             </div>
         </div>
     );
-};
+}
 
 export default InfiniteMarquee;

@@ -1,0 +1,47 @@
+.cb-tagreel-content {
+    padding: 35px 0;
+    background-color: whitesmoke;
+}
+
+.cb-tagreel-items {
+    margin: -58px 0;
+    overflow: hidden;
+    cursor: default;
+}
+
+.cb-tagreel-row {
+    display: flex;
+    position: relative;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.cb-tagreel-item {
+    position: relative;
+    line-height: 100%;
+    font-size: 3.75vw;
+    flex: 0 0 33%;
+    padding: 58px 0;
+    text-transform: uppercase;
+}
+
+.dark .cb-tagreel-item {
+    color: slategray;
+    /* Light text color for dark mode */
+}
+
+.dark .cb-tagreel-item.-stroke {
+    color: black;
+}
+
+.cb-tagreel-item.-stroke {
+    color: white;
+    text-shadow: none;
+    -webkit-text-stroke: 2px rgba(0, 0, 0, 0.2);
+}
+
+.cb-tagreel-item span {
+    position: relative;
+    display: inline-block;
+    z-index: 1;
+}
