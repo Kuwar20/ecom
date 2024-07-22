@@ -2,7 +2,8 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Loader from './components/Loader';
 import Navbar from './components/Navbar';
-import Product from './pages/Product';
+const Product = lazy(() => import('./pages/Product'));
+const ProductDetails = lazy(() => import('./components/ProductDetails'));
 const Hero = lazy(() => import('./pages/Hero'));
 const SignupForm = lazy(() => import('./forms/signup/Signup'));
 const Login = lazy(() => import('./forms/login/Login'));
@@ -18,6 +19,7 @@ function App() {
             <Route path="/signup" element={<SignupForm />} />
             <Route path="/login" element={<Login />} />
             <Route path="/product" element={<Product />} />
+            <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="*" element={<div>Not Found</div>} />
           </Routes>
         </Suspense>
