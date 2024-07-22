@@ -3,27 +3,28 @@ import { useParams, useLocation } from 'react-router-dom';
 
 const ProductDetail = () => {
     const { id } = useParams();
-    const location = useLocation();
-    const { product } = location.state || {};
+    const { product } = useLocation().state || {};
 
-    if (!product) {
-        return <div>Product not found</div>;
-    }
+    if (!product) return <div className="text-center mt-8">Product not found</div>;
 
     return (
-        <div className='min-h-screen p-8'>
-            <h1 className='text-3xl font-bold mb-6'>{product.title}</h1>
-            <div className='flex flex-col md:flex-row'>
-                <div className='md:w-1/2 mb-6 md:mb-0'>
-                    <img src={product.image} alt={product.title} className='w-full h-auto object-contain' />
+        <div className="container mx-auto px-4 py-8">
+            <h1 className="text-2xl font-bold mb-6">{product.title}</h1>
+            <div className="flex flex-col md:flex-row gap-8">
+                <div className="md:w-1/3">
+                    <img src={product.image} alt={product.title} className="w-full h-64 object-contain" />
                 </div>
-                <div className='md:w-1/2 md:pl-8'>
-                    <p className='text-xl font-semibold mb-4'>Price: ${product.price}</p>
-                    <p className='mb-4'>{product.description}</p>
-                    <p className='text-lg font-medium'>Category: {product.category}</p>
-                    <p className='text-lg font-medium'>Count: {product.rating.count}</p>
-                    <p className='text-lg font-medium'>Rating: {product.rating.rate}</p>
-                    
+                <div className="md:w-2/3">
+                    <p className="text-xl font-semibold mb-2">${product.price.toFixed(2)}</p>
+                    <p className="mb-4">{product.description}</p>
+                    <p className="mb-2"><span className="font-medium">Category:</span> {product.category}</p>
+                    <p className="mb-2"><span className="font-medium">In Stock:</span> {product.rating.count}</p>
+                    <div className="flex items-center">
+                        <span className="font-medium mr-2">Rating:</span>
+                        <span className="text-yellow-500">{'★'.repeat(Math.round(product.rating.rate))}</span>
+                        <span className="text-gray-400">{'★'.repeat(5 - Math.round(product.rating.rate))}</span>
+                        <span className="ml-2">({product.rating.rate})</span>
+                    </div>
                 </div>
             </div>
         </div>
