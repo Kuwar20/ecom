@@ -1,6 +1,7 @@
 import React from 'react'
 import PhotoCarousel from '../components/Carousel';
 import InfiniteMarquee from '../components/InfiniteMarquee';
+import Product from './Product';
 
 const Hero = () => {
   const images = [
@@ -14,6 +15,7 @@ const Hero = () => {
     <div className='h-screen dark:bg-gray-800 dark:opacity-60'>
       <PhotoCarousel images={images} />
       <InfiniteMarquee text="Fashion • Trending • Arrivals " />
+      <Product />
     </div>
   )
 }
