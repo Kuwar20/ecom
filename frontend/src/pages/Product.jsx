@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const Product = () => {
-    const [productData, setProductData] = useState(null);
+    const [productData, setProductData] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch('https://fakestoreapi.com/products/1')
+        fetch('https://fakestoreapi.com/products')
             .then(res => res.json())
             .then(json => {
                 console.log(json);
@@ -26,20 +26,20 @@ const Product = () => {
         <div className='min-h-screen'>
             <h1 className='bg-white text-center text-2xl font-bold mb-4 p-4 dark:text-black dark:bg-white'>Product Details</h1>
             <div className='m-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
-                {[...Array(5)].map((_, index) => (
-                    <Link key={index} to={`/product/${productData.id}`} className='block'>
-                        <div className='bg-white shadow-md rounded-lg p-6 w-full max-w-xs hover:shadow-lg transition-transform transform hover:scale-105 cursor-pointer dark:text-black'>
-                            <div className='relative overflow-hidden rounded-lg'>
+                {productData.map((product, index) => (
+                    <Link key={index} to={`/product/${product.id}`} state={{product}} className='block'>
+                        <div className='bg-white shadow-md rounded-lg p-6 w-full h-[450px] flex flex-col hover:shadow-lg transition-transform transform hover:scale-105 cursor-pointer dark:text-black'>
+                            <div className='relative overflow-hidden rounded-lg h-[250px]'>
                                 <img
-                                    src={productData.image}
-                                    alt={productData.title}
-                                    className='w-full h-1/3 object-cover'
+                                    src={product.image}
+                                    alt={product.title}
+                                    className='w-full h-full object-contain'
                                 />
                                 <div className='absolute inset-0 bg-black opacity-0 hover:opacity-40 transition-opacity duration-300'></div>
                             </div>
-                            <div className='flex flex-col items-start mt-4'>
-                                <h2 className='text-sm font-semibold mb-2'>{productData.title}</h2>
-                                <p className='text-sm font-medium text-gray-700 mb-4'>Price: ${productData.price}</p>
+                            <div className='flex flex-col items-start mt-4 flex-grow'>
+                                <h2 className='text-sm font-semibold mb-2 line-clamp-2'>{product.title}</h2>
+                                <p className='text-sm font-medium text-gray-700 mt-auto'>Price: ${product.price}</p>
                             </div>
                         </div>
                     </Link>
