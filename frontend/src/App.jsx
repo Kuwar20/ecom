@@ -7,7 +7,7 @@ const Cart = lazy(() => import('./components/Cart'));
 const Product = lazy(() => import('./pages/Product'));
 const ProductDetails = lazy(() => import('./components/ProductDetails'));
 const SignupForm = lazy(() => import('./forms/signup/Signup'));
-const Login = lazy(() => import('./forms/login/Login'));
+const LoginForm = lazy(() => import('./forms/login/Login'));
 
 function App() {
   return (
@@ -17,7 +17,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Layout />} />
             <Route path="/signup" element={<SignupForm />} />
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<LoginForm />} />
             <Route path="/product" element={<Product />} />
             <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="/cart" element={<Cart />} />

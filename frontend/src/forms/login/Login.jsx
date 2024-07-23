@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -6,19 +6,39 @@ import { Link, useNavigate } from "react-router-dom";
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../../store/slices/authSlice";
+import {jwtDecode} from "jwt-decode";
+
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
-const Signup = () => {
+const Login = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
+    // const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState({
         strength: 0,
         label: "",
     });
+    // const navigate = useNavigate();
+
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const isLoading = useSelector((state) => state.auth.isLoading);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            const decodedToken = jwtDecode(token);
+            if (decodedToken.exp * 1000 < Date.now()) {
+                localStorage.removeItem("token");
+            } else {
+                navigate("/dashboard");
+            }
+        }
+    }, [navigate]);
 
     const checkPasswordStrength = (password) => {
         let strength = 0;
@@ -41,7 +61,7 @@ const Signup = () => {
         if (!email) return "Email is required";
         if (!password) return "Password is required";
         if (passwordStrength.label === "Weak") return "Password is weak";
-        return "Register";
+        return "Login";
     };
     const isButtonDisabled = () => {
         return (
@@ -52,41 +72,52 @@ const Signup = () => {
         );
     };
 
-    const handleSignup = async (userData) => {
-        setIsLoading(true);
-        console.log(name, email, password);
+    const handleLogin = async (userData) => {
         try {
-            const response = await fetch("http://localhost:3000/api/auth/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(userData),
-            });
-            const data = await response.json();
-            console.log(data);
-            if (data.message) {
-                toast.success(data.message);
-                console.log(data);
-                setTimeout(() => {
-                    navigate(data.role === "dealer" ? "/dealer" : data.role === "admin" ? "/admin" : "/user");
-                }, 1000);
-            } else {
-                toast.error(data.error);
-            }
+            const result = await dispatch(login(userData)).unwrap();
+            toast.success(result.message);
+            localStorage.setItem("token", result.token);
+            navigate(result.role === "dealer" ? "/dealer" : result.role === "admin" ? "/admin" : "/user");
         } catch (error) {
-            toast.error("Something went wrong");
-        } finally {
-            setIsLoading(false);
-            setEmail("");
-            setPassword("");
-            setName("");
+            toast.error(error);
         }
     };
 
+    // const handleLogin = async (userData) => {
+    //     setIsLoading(true);
+    //     console.log(name, email, password);
+    //     try {
+    //         const response = await fetch("http://localhost:3000/api/auth/login", {
+    //             method: "POST",
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //             },
+    //             body: JSON.stringify(userData),
+    //         });
+    //         const data = await response.json();
+    //         console.log(data);
+    //         if (data.message) {
+    //             toast.success(data.message);
+    //             console.log(data);
+    //             setTimeout(() => {
+    //                 navigate(data.role === "dealer" ? "/dealer" : data.role === "admin" ? "/admin" : "/user");
+    //             }, 1000);
+    //         } else {
+    //             toast.error(data.error);
+    //         }
+    //     } catch (error) {
+    //         toast.error("Something went wrong");
+    //     } finally {
+    //         setIsLoading(false);
+    //         setEmail("");
+    //         setPassword("");
+    //         setName("");
+    //     }
+    // };
+
     const handleTraditionalSignup = (e) => {
         e.preventDefault();
-        handleSignup({ email, password });
+        handleLogin({ email, password });
     };
 
     const handleGoogleLogin = async (credentialResponse) => {
@@ -98,7 +129,7 @@ const Signup = () => {
             };
             console.log(userData);
             console.log(credentialResponse);
-            await handleSignup(userData);
+            await handleLogin(userData);
         } catch (error) {
             console.error("Google login error:", error);
             toast.error("Google login failed");
@@ -270,4 +301,4 @@ const Signup = () => {
     );
 };
 
-export default Signup;
+export default Login;
