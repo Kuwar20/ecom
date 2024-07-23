@@ -31,7 +31,10 @@ const Navbar = () => {
                                 <DarkMode />
                             </div>
                             <div className='px-2'>
-                                <FaShoppingCart className="h-6 w-6" />
+                                <FaShoppingCart 
+                                className="h-6 w-6 cursor-pointer"
+                                onClick={() => window.location.href = '/cart'}
+                                />
                             </div>
                             <div className='px-2'>
                                 <FaRegUserCircle 
@@ -50,7 +53,10 @@ const Navbar = () => {
                     <div className="hidden md:flex items-center">
                         <DarkMode />
                         <div className="px-2">
-                            <FaShoppingCart className="h-6 w-6" />
+                            <FaShoppingCart 
+                            className="h-6 w-6 cursor-pointer"
+                            onClick={() => window.location.href = '/cart'}
+                            />
                         </div>
                         <div className="px-2">
                             <FaRegUserCircle 
