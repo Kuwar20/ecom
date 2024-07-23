@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import DarkMode from './DarkMode';
 import { HiBars3BottomRight } from "react-icons/hi2";
 import { IoMdClose } from "react-icons/io";
+import { FaShoppingCart, FaRegUserCircle } from "react-icons/fa";
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -12,7 +14,7 @@ const Navbar = () => {
                 <div className="flex justify-between items-center h-16">
                     <div className="flex items-center">
                         <a href="#" className="flex items-center py-4 px-2">
-                            <span className="font-semibold text-lg">Your Logo</span>
+                            <span className="font-semibold text-lg"><Link to='/'>Ecom</Link></span>
                         </a>
                     </div>
 
@@ -24,8 +26,19 @@ const Navbar = () => {
                     </div>
 
                     <div className="md:hidden flex items-center">
-                        <div className="px-2">
-                            <DarkMode />
+                        <div className="px-2 flex items-center">
+                            <div className='px-2'>
+                                <DarkMode />
+                            </div>
+                            <div className='px-2'>
+                                <FaShoppingCart className="h-6 w-6" />
+                            </div>
+                            <div className='px-2'>
+                                <FaRegUserCircle 
+                                className="h-8 w-6 cursor-pointer"
+                                onClick={() => window.location.href = '/login'}
+                                />
+                            </div>
                         </div>
                         <button className="mobile-menu-button" onClick={() => setIsOpen(!isOpen)}>
                             {isOpen
@@ -34,9 +47,17 @@ const Navbar = () => {
                             }
                         </button>
                     </div>
-
                     <div className="hidden md:flex items-center">
                         <DarkMode />
+                        <div className="px-2">
+                            <FaShoppingCart className="h-6 w-6" />
+                        </div>
+                        <div className="px-2">
+                            <FaRegUserCircle 
+                            className="h-8 w-6 cursor-pointer" 
+                            onClick={() => window.location.href = '/login'}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>

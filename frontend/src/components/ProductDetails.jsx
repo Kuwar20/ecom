@@ -25,6 +25,7 @@ const ProductDetail = () => {
                         <span className="text-gray-400">{'★'.repeat(5 - Math.round(product.rating.rate))}</span>
                         <span className="ml-2">({product.rating.rate})</span>
                     </div>
+                    <button className='bg-slate-400 mt-4 p-3 rounded-md hover:bg-green-600 text-white'>Add to Cart</button>
                 </div>
             </div>
         </div>
