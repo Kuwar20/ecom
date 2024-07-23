@@ -15,13 +15,13 @@ const ProductDetail = () => {
             <main className="flex-grow container mx-auto px-4 py-12">
                 <div className=" rounded-lg overflow-hidden">
                     <div className="md:flex">
-                        <div className="md:w-1/2 p-6">
+                        <div className="md:w-1/3 p-6">
                             <div className="relative group dark:opacity-50">
                                 <img src={product.image} alt={product.title} className="w-full h-96 object-contain" />
                                 <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
                             </div>
                         </div>
-                        <div className="md:w-1/2 p-6 text-justify">
+                        <div className="md:w-1/3 p-6 text-justify">
                             <h1 className="text-3xl font-bold mb-4">{product.title}</h1>
                             <p className="text-2xl font-semibold text-green-600 mb-4">${product.price.toFixed(2)}</p>
                             <p className="text-gray-600 mb-6 dark:text-white">{product.description}</p>
