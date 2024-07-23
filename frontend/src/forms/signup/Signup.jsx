@@ -4,6 +4,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
 
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -107,106 +109,108 @@ const Signup = () => {
     };
 
     return (
-        <GoogleOAuthProvider clientId={googleClientId}>
-            <div className="bg-gray-200 dark:bg-gray-800 min-h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-8">
-                <div className="bg-white max-w-md w-full mx-auto py-8 px-4 sm:px-6 rounded-lg shadow-md dark:bg-gray-800 border">
-                    <div className="mb-6 text-center">
-                        <h1 className="font-bold text-3xl">Signup</h1>
-                    </div>
-                    <div>
-                        <form className="space-y-4" onSubmit={handleTraditionalSignup}>
-                            <div>
-                                <label className="text-sm font-semibold">Name</label>
-                                <div className="mt-1">
-                                    <input
-                                        type="text"
-                                        placeholder="Enter your name"
-                                        required
-                                        disabled={isLoading}
-                                        value={name}
-                                        onChange={(e) => {
-                                            setName(e.target.value);
-                                            console.log(e.target.value);
-                                        }}
-                                        className="w-full border-2 p-2.5 rounded-md focus:border-blue-700 focus:outline-none dark:text-black"
-                                    />
+        <>
+            <Navbar />
+            <GoogleOAuthProvider clientId={googleClientId}>
+                <div className="bg-gray-200 dark:bg-gray-800 min-h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-8">
+                    <div className="bg-white max-w-md w-full mx-auto py-8 px-4 sm:px-6 rounded-lg shadow-md dark:bg-gray-800 border">
+                        <div className="mb-6 text-center">
+                            <h1 className="font-bold text-3xl">Signup</h1>
+                        </div>
+                        <div>
+                            <form className="space-y-4" onSubmit={handleTraditionalSignup}>
+                                <div>
+                                    <label className="text-sm font-semibold">Name</label>
+                                    <div className="mt-1">
+                                        <input
+                                            type="text"
+                                            placeholder="Enter your name"
+                                            required
+                                            disabled={isLoading}
+                                            value={name}
+                                            onChange={(e) => {
+                                                setName(e.target.value);
+                                                console.log(e.target.value);
+                                            }}
+                                            className="w-full border-2 p-2.5 rounded-md focus:border-blue-700 focus:outline-none dark:text-black"
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                            <div>
-                                <label className="text-sm font-semibold">Email</label>
-                                <div className="mt-1">
-                                    <input
-                                        type="email"
-                                        value={email}
-                                        onChange={(e) => {
-                                            setEmail(e.target.value);
-                                            console.log(e.target.value);
-                                        }}
-                                        required
-                                        disabled={isLoading}
-                                        placeholder="Enter your email"
-                                        className="w-full border-2 p-2.5 rounded-md focus:border-blue-700 focus:outline-none dark:text-black"
-                                    />
+                                <div>
+                                    <label className="text-sm font-semibold">Email</label>
+                                    <div className="mt-1">
+                                        <input
+                                            type="email"
+                                            value={email}
+                                            onChange={(e) => {
+                                                setEmail(e.target.value);
+                                                console.log(e.target.value);
+                                            }}
+                                            required
+                                            disabled={isLoading}
+                                            placeholder="Enter your email"
+                                            className="w-full border-2 p-2.5 rounded-md focus:border-blue-700 focus:outline-none dark:text-black"
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                            <div>
-                                <label className="text-sm font-semibold">Password</label>
-                                <div className="relative mt-1">
-                                    <input
-                                        type={showPassword ? "text" : "password"}
-                                        placeholder="Enter your password"
-                                        required
-                                        value={password}
-                                        disabled={isLoading}
-                                        onChange={(e) => {
-                                            setPassword(e.target.value);
-                                            console.log(e.target.value);
-                                            setPasswordStrength(checkPasswordStrength(e.target.value));
-                                        }}
-                                        className="w-full border-2 p-2.5 rounded-md focus:border-blue-700 focus:outline-none dark:text-black"
-                                    />
-                                    {password && (
-                                        <div
-                                            className="absolute top-3 right-5 cursor-pointer"
-                                            onClick={() => setShowPassword(!showPassword)}
-                                        >
-                                            {showPassword ? (
-                                                <FaEye className="h-5 w-5" />
-                                            ) : (
-                                                <FaEyeSlash className="h-5 w-5" />
-                                            )}
-                                        </div>
-                                    )}
-                                    {password && (
-                                        <div className="mt-1.5 p-0.5">
-                                            <div className="w-1/2 bg-gray-200 rounded-full h-1">
-                                                <div
-                                                    className={`h-1 rounded-full ${passwordStrength.label === "Weak"
-                                                        ? "bg-red-500"
-                                                        : passwordStrength.label === "Moderate"
-                                                            ? "bg-yellow-500"
-                                                            : "bg-green-500"
-                                                        }`}
-                                                    style={{
-                                                        width: `${(passwordStrength.strength / 7) * 100}%`,
-                                                    }}
-                                                ></div>
+                                <div>
+                                    <label className="text-sm font-semibold">Password</label>
+                                    <div className="relative mt-1">
+                                        <input
+                                            type={showPassword ? "text" : "password"}
+                                            placeholder="Enter your password"
+                                            required
+                                            value={password}
+                                            disabled={isLoading}
+                                            onChange={(e) => {
+                                                setPassword(e.target.value);
+                                                console.log(e.target.value);
+                                                setPasswordStrength(checkPasswordStrength(e.target.value));
+                                            }}
+                                            className="w-full border-2 p-2.5 rounded-md focus:border-blue-700 focus:outline-none dark:text-black"
+                                        />
+                                        {password && (
+                                            <div
+                                                className="absolute top-3 right-5 cursor-pointer"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                            >
+                                                {showPassword ? (
+                                                    <FaEye className="h-5 w-5" />
+                                                ) : (
+                                                    <FaEyeSlash className="h-5 w-5" />
+                                                )}
                                             </div>
-                                            <div className="w-1/2 flex justify-between mt-1">
-                                                <span className="text-xs text-gray-500">Weak</span>
-                                                <span className="text-xs text-gray-500">Strong</span>
+                                        )}
+                                        {password && (
+                                            <div className="mt-1.5 p-0.5">
+                                                <div className="w-1/2 bg-gray-200 rounded-full h-1">
+                                                    <div
+                                                        className={`h-1 rounded-full ${passwordStrength.label === "Weak"
+                                                            ? "bg-red-500"
+                                                            : passwordStrength.label === "Moderate"
+                                                                ? "bg-yellow-500"
+                                                                : "bg-green-500"
+                                                            }`}
+                                                        style={{
+                                                            width: `${(passwordStrength.strength / 7) * 100}%`,
+                                                        }}
+                                                    ></div>
+                                                </div>
+                                                <div className="w-1/2 flex justify-between mt-1">
+                                                    <span className="text-xs text-gray-500">Weak</span>
+                                                    <span className="text-xs text-gray-500">Strong</span>
+                                                </div>
                                             </div>
-                                        </div>
-                                    )}
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="text-sm hover:underline text-right hover:text-blue-600">
-                                <Link to='/login' className="font-semibold">
-                                    Already have Account? Login here
-                                </Link>
-                            </div>
-                            <div className="text-white font-bold">
-                                {/* 
+                                <div className="text-sm hover:underline text-right hover:text-blue-600">
+                                    <Link to='/login' className="font-semibold">
+                                        Already have Account? Login here
+                                    </Link>
+                                </div>
+                                <div className="text-white font-bold">
+                                    {/* 
                             // way 1 to disable button , but not recommended as it is not readable and manageable
                             <button
                                     disabled={isLoading || passwordStrength.label === "Weak" || !name || !email || !password}
@@ -232,55 +236,57 @@ const Signup = () => {
                                     }
                                 </button>
                                 */}
-                                <button
-                                    type="submit"
-                                    disabled={isButtonDisabled()}
-                                    className={`
+                                    <button
+                                        type="submit"
+                                        disabled={isButtonDisabled()}
+                                        className={`
                                 ${isButtonDisabled()
-                                            ? "bg-gray-500"
-                                            : "bg-green-600 hover:bg-green-700 cursor-pointer"
-                                        }
+                                                ? "bg-gray-500"
+                                                : "bg-green-600 hover:bg-green-700 cursor-pointer"
+                                            }
                                     text-white font-semibold w-full p-2.5 rounded-md transition-colors duration-200
                                 `}
-                                >
-                                    {getButtonMessage()}
-                                </button>
-                            </div>
-                        </form>
-                        <ToastContainer />
-                        <div>
-                            <div className="mt-3">
-                                <h1 className="text-sm text-center">or continue with</h1>
-                            </div>
-                            <div className="mt-4 flex items-center justify-center gap-2">
-                                <GoogleLogin
-                                    onSuccess={handleGoogleLogin}
-                                    onError={(error) => {
-                                        console.error('Google login error:', error);
-                                        toast.error('Google login failed');
-                                    }}
-                                    render={({ onClick }) => (
-                                        <button onClick={onClick} className="w-full flex items-center justify-center px-8 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-100">
-                                            <img className="h-6 w-6" src="https://www.svgrepo.com/show/506498/google.svg" alt="Google" />
-                                        </button>
-                                    )}
-                                />
-                                <a
-                                    href="#"
-                                    className="w-full flex items-center justify-center px-8 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-100"
-                                >
-                                    <img
-                                        className="h-5 w-5"
-                                        src="https://www.svgrepo.com/show/512120/facebook-176.svg"
-                                        alt="Facebook"
+                                    >
+                                        {getButtonMessage()}
+                                    </button>
+                                </div>
+                            </form>
+                            <ToastContainer />
+                            <div>
+                                <div className="mt-3">
+                                    <h1 className="text-sm text-center">or continue with</h1>
+                                </div>
+                                <div className="mt-4 flex items-center justify-center gap-2">
+                                    <GoogleLogin
+                                        onSuccess={handleGoogleLogin}
+                                        onError={(error) => {
+                                            console.error('Google login error:', error);
+                                            toast.error('Google login failed');
+                                        }}
+                                        render={({ onClick }) => (
+                                            <button onClick={onClick} className="w-full flex items-center justify-center px-8 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-100">
+                                                <img className="h-6 w-6" src="https://www.svgrepo.com/show/506498/google.svg" alt="Google" />
+                                            </button>
+                                        )}
                                     />
-                                </a>
+                                    <a
+                                        href="#"
+                                        className="w-full flex items-center justify-center px-8 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-100"
+                                    >
+                                        <img
+                                            className="h-5 w-5"
+                                            src="https://www.svgrepo.com/show/512120/facebook-176.svg"
+                                            alt="Facebook"
+                                        />
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </GoogleOAuthProvider>
+            </GoogleOAuthProvider>
+            <Footer />
+        </>
     );
 };
 
