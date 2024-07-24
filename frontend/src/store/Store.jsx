@@ -10,7 +10,7 @@ import productReducer from './slices/productSlice';
 const persistConfig = {
     key: 'root',
     storage,
-    whitelist: ['auth', 'cart'] // Only persist auth and cart state
+    whitelist: ['auth', 'cart','products'] // Only persist auth and cart state
 };
 
 const rootReducer = combineReducers({

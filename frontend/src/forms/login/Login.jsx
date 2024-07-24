@@ -8,12 +8,11 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../../store/slices/authSlice";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 const Login = () => {
-    const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     // const [isLoading, setIsLoading] = useState(false);
@@ -26,19 +25,19 @@ const Login = () => {
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const isLoading = useSelector((state) => state.auth.isLoading);
+    const { isLoading, role } = useSelector((state) => state.auth.isLoading);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            const decodedToken = jwtDecode(token);
-            if (decodedToken.exp * 1000 < Date.now()) {
-                localStorage.removeItem("token");
+        if (role) {
+            if (role === "admin") {
+                navigate("/admin");
+            } else if (role === "dealer") {
+                navigate("/dealer");
             } else {
-                navigate("/dashboard");
+                navigate("/user");
             }
         }
-    }, [navigate]);
+    }, [role, navigate]);
 
     const checkPasswordStrength = (password) => {
         let strength = 0;
@@ -76,8 +75,7 @@ const Login = () => {
         try {
             const result = await dispatch(login(userData)).unwrap();
             toast.success(result.message);
-            localStorage.setItem("token", result.token);
-            navigate(result.role === "dealer" ? "/dealer" : result.role === "admin" ? "/admin" : "/user");
+            navigate(result.role === "dealer" ? "/dealer" : result.role === "admin" ? "/admin" : "/");
         } catch (error) {
             toast.error(error);
         }
