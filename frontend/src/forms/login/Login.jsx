@@ -28,6 +28,24 @@ const Login = () => {
     const { isLoading, role } = useSelector((state) => state.auth.isLoading);
 
     useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            const decodedToken = jwtDecode(token);
+            if (decodedToken.exp * 1000 < Date.now()) {
+                localStorage.removeItem("token");
+            } else {
+                if (role === "admin") {
+                    navigate("/admin");
+                } else if (role === "dealer") {
+                    navigate("/dealer");
+                } else {
+                    navigate("/user");
+                }
+            }
+        }
+    }, [navigate, role]);
+
+    useEffect(() => {
         if (role) {
             if (role === "admin") {
                 navigate("/admin");
@@ -38,7 +56,7 @@ const Login = () => {
             }
         }
     }, [role, navigate]);
-
+    
     const checkPasswordStrength = (password) => {
         let strength = 0;
         if (password.length >= 5) strength += 2;
