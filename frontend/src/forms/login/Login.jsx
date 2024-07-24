@@ -39,7 +39,7 @@ const Login = () => {
                 } else if (role === "dealer") {
                     navigate("/dealer");
                 } else {
-                    navigate("/user");
+                    navigate("/profile");
                 }
             }
         }
@@ -52,7 +52,7 @@ const Login = () => {
             } else if (role === "dealer") {
                 navigate("/dealer");
             } else {
-                navigate("/user");
+                navigate("/profile");
             }
         }
     }, [role, navigate]);

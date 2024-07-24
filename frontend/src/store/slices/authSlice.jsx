@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { jwtDecode } from "jwt-decode";
 import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const login = createAsyncThunk(
   "auth/login",
@@ -33,6 +34,69 @@ export const login = createAsyncThunk(
       } else {
         return rejectWithValue(error.message);
       }
+    }
+  }
+);
+
+export const updateUser = createAsyncThunk(
+  "auth/updateUser",
+  async (userData, { rejectWithValue }) => {
+    try {
+      const response = await fetch("http://localhost:3000/api/auth/update", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(userData),
+      });
+      const data = await response.json();
+      console.log(data);
+      if (data.error) {
+        toast.error(data.error);  
+        return rejectWithValue(data.error);
+      }
+      localStorage.setItem("email", data.email);
+      localStorage.setItem("role", data.role);
+      toast.success("User updated successfully!");
+      return data;
+    } catch (error) {
+      if (error.response && error.response.data) {
+        toast.error(error.response.data.message);
+        return rejectWithValue(error.response.data.message);
+      } else {
+        toast.error(error.message);
+        return rejectWithValue(error.message);
+      }
+    }
+  }
+);
+
+export const deleteUser = createAsyncThunk(
+  "auth/deleteUser",
+  async (_, { rejectWithValue, dispatch }) => {
+    try {
+      const response = await fetch("http://localhost:3000/api/auth/delete", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const data = await response.json();
+      if (data.error) {
+        return rejectWithValue(data.error);
+      }
+      toast.success("User deleted successfully!");
+      // Clear local storage and dispatch logout
+      localStorage.removeItem('token');
+      localStorage.removeItem('email');
+      localStorage.removeItem('role');
+      localStorage.removeItem('id');
+      dispatch(logout());
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
     }
   }
 );
@@ -76,6 +140,31 @@ const authSlice = createSlice({
         state.id = jwtDecode(action.payload.token)._id;
       })
       .addCase(login.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.email = action.payload.email;
+        state.role = action.payload.role;
+      })
+      .addCase(updateUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(deleteUser.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(deleteUser.fulfilled, (state) => {
+        state.isLoading = false;
+        state.user = null;
+        state.email = null;
+        state.role = null;
+        state.id = null;
+        state.token = null;
+      })
+      .addCase(deleteUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       });

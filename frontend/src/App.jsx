@@ -8,6 +8,7 @@ const Product = lazy(() => import('./pages/Product'));
 const ProductDetails = lazy(() => import('./components/ProductDetails'));
 const SignupForm = lazy(() => import('./forms/signup/Signup'));
 const LoginForm = lazy(() => import('./forms/login/Login'));
+const Profile = lazy(() => import('./pages/Profile'));
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
             <Route path="/product" element={<Product />} />
             <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="/cart" element={<Cart />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="*" element={<div>Not Found</div>} />
           </Routes>
         </Suspense>
