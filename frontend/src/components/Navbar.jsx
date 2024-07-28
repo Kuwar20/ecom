@@ -16,7 +16,7 @@ const Navbar = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { email } = useSelector(state => state.auth);
-    
+
     const cartItems = useSelector(state => state.cart.items);
 
     const openCart = () => {
