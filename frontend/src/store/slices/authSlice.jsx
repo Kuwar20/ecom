@@ -2,7 +2,6 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { setUserId } from "./cartSlice";
 
 export const login = createAsyncThunk(
   "auth/login",
@@ -21,8 +20,6 @@ export const login = createAsyncThunk(
       }
       const token = data.token;
       const decodedToken = jwtDecode(token);
-      
-      dispatch(setUserId(decodedToken._id));
 
       localStorage.setItem("token", token);
       localStorage.setItem("email", decodedToken.email);
