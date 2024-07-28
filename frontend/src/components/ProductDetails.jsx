@@ -1,12 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart } from '../store/slices/cartSlice';
 
 const ProductDetail = () => {
     const { id } = useParams();
     const { product } = useLocation().state || {};
 
+    const dispatch = useDispatch();
+    
     if (!product) return <div className="text-center mt-8">Product not found</div>;
 
     return (
@@ -46,7 +50,9 @@ const ProductDetail = () => {
                                     <span className="ml-2 text-gray-600">({product.rating.rate})</span>
                                 </div>
                             </div>
-                            <button className="w-1/3 bg-green-600 text-white py-3 px-6 rounded-md hover:bg-green-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+                            <button
+                                onClick={() => dispatch(addToCart(product))}
+                                className="w-1/3 bg-green-600 text-white py-3 px-6 rounded-md hover:bg-green-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
                                 Add to Cart
                             </button>
                         </div>

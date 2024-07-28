@@ -5,18 +5,18 @@ import { combineReducers } from 'redux';
 
 import authReducer from './slices/authSlice';
 import productReducer from './slices/productSlice';
-//import cartReducer from './slices/cartSlice';
+import cartReducer from './slices/cartSlice.jsx';
 
 const persistConfig = {
     key: 'root',
     storage,
-    whitelist: ['auth', 'cart','products'] // Only persist auth and cart state
+    whitelist: ['auth', 'cart','products']
 };
 
 const rootReducer = combineReducers({
     auth: authReducer,
     products: productReducer,
-    //cart: cartReducer,
+    cart: cartReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
