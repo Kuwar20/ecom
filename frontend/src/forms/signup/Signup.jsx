@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -6,6 +6,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import { register } from "../../store/slices/authSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -13,13 +15,28 @@ const Signup = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
+    // const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState({
         strength: 0,
         label: "",
     });
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const { isLoading, role } = useSelector((state) => state.auth.isLoading);
+
+    useEffect(() => {
+        if (role) {
+            if (role === "admin") {
+                navigate("/admin");
+            } else if (role === "dealer") {
+                navigate("/dealer");
+            } else {
+                navigate("/profile");
+            }
+        }
+    }, [role, navigate]);
 
     const checkPasswordStrength = (password) => {
         let strength = 0;
@@ -56,36 +73,46 @@ const Signup = () => {
     };
 
     const handleSignup = async (userData) => {
-        setIsLoading(true);
-        console.log(name, email, password);
         try {
-            const response = await fetch("http://localhost:3000/api/auth/register", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(userData),
-            });
-            const data = await response.json();
-            console.log(data);
-            if (data.message) {
-                toast.success(data.message);
-                console.log(data);
-                setTimeout(() => {
-                    navigate(data.role === "dealer" ? "/dealer" : data.role === "admin" ? "/admin" : "/user");
-                }, 1000);
-            } else {
-                toast.error(data.error);
-            }
+            const result = await dispatch(register(userData)).unwrap();
+            toast.success(result.message);
+            navigate(result.role === "dealer" ? "/dealer" : result.role === "admin" ? "/admin" : "/");
         } catch (error) {
-            toast.error("Something went wrong");
-        } finally {
-            setIsLoading(false);
-            setEmail("");
-            setPassword("");
-            setName("");
+            toast.error(error);
         }
     };
+
+    // const handleSignup = async (userData) => {
+    //     setIsLoading(true);
+    //     console.log(name, email, password);
+    //     try {
+    //         const response = await fetch("http://localhost:3000/api/auth/register", {
+    //             method: "POST",
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //             },
+    //             body: JSON.stringify(userData),
+    //         });
+    //         const data = await response.json();
+    //         console.log(data);
+    //         if (data.message) {
+    //             toast.success(data.message);
+    //             console.log(data);
+    //             setTimeout(() => {
+    //                 navigate(data.role === "dealer" ? "/dealer" : data.role === "admin" ? "/admin" : "/user");
+    //             }, 1000);
+    //         } else {
+    //             toast.error(data.error);
+    //         }
+    //     } catch (error) {
+    //         toast.error("Something went wrong");
+    //     } finally {
+    //         setIsLoading(false);
+    //         setEmail("");
+    //         setPassword("");
+    //         setName("");
+    //     }
+    // };
 
     const handleTraditionalSignup = (e) => {
         e.preventDefault();

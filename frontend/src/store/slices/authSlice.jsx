@@ -53,7 +53,7 @@ export const updateUser = createAsyncThunk(
       const data = await response.json();
       console.log(data);
       if (data.error) {
-        toast.error(data.error);  
+        toast.error(data.error);
         return rejectWithValue(data.error);
       }
       localStorage.setItem("email", data.email);
@@ -97,6 +97,39 @@ export const deleteUser = createAsyncThunk(
       return data;
     } catch (error) {
       return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const register = createAsyncThunk(
+  "auth/register",
+  async (userData, { rejectWithValue }) => {
+    try {
+      const response = await fetch("http://localhost:3000/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
+      const data = await response.json();
+      if (data.error) {
+        return rejectWithValue(data.error);
+      }
+
+      toast.success("Registered successfully!");
+      console.log(data.user);
+      localStorage.setItem("id", data.user.id);
+      localStorage.setItem("email", data.user.email);
+      localStorage.setItem("role", data.user.role);
+      // return data;
+      return { ...data, email: data.user.email, role: data.user.role, id: data.user.id };
+    } catch (error) {
+      if (error.response && error.response.data) {
+        return rejectWithValue(error.response.data.message);
+      } else {
+        return rejectWithValue(error.message);
+      }
     }
   }
 );
@@ -165,6 +198,20 @@ const authSlice = createSlice({
         state.token = null;
       })
       .addCase(deleteUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(register.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(register.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.email = action.payload.email;
+        state.role = action.payload.role;
+        state.id = action.payload.id;
+      })
+      .addCase(register.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       });
