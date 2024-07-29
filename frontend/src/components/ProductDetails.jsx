@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
+// src/components/ProductDetail.js
+import React from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { addToCart } from '../store/slices/cartSlice';
 
 const ProductDetail = () => {
@@ -10,14 +11,14 @@ const ProductDetail = () => {
     const { product } = useLocation().state || {};
 
     const dispatch = useDispatch();
-    
+
     if (!product) return <div className="text-center mt-8">Product not found</div>;
 
     return (
         <div className="flex flex-col min-h-screen">
             <Navbar />
             <main className="flex-grow container mx-auto px-4 py-12">
-                <div className=" rounded-lg overflow-hidden">
+                <div className="rounded-lg overflow-hidden">
                     <div className="md:flex">
                         <div className="md:w-1/3 p-6">
                             <div className="relative group dark:opacity-50">
