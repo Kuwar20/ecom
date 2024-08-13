@@ -1,13 +1,17 @@
-// src/components/Cart.js
-import React from 'react';
+// src/components/Cart.jsx
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { removeFromCart, clearCart } from '../store/slices/cartSlice';
+import { fetchCart, removeFromCart, clearCart } from '../store/slices/cartSlice';
 import Navbar from './Navbar';
 import Footer from './Footer';
 
 const Cart = () => {
   const dispatch = useDispatch();
-  const cartItems = useSelector(state => state.cart.items);
+  const cartItems = useSelector(state => state.cart.items || []); // Ensure it's an array
+
+  useEffect(() => {
+    dispatch(fetchCart());
+  }, [dispatch]);
 
   const handleRemoveFromCart = (id) => {
     dispatch(removeFromCart({ id }));

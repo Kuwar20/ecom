@@ -5,6 +5,12 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: { type: String, enum: ['user', 'dealer', 'admin'], required: true },
+    cart: [
+        {
+            productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
+            quantity: { type: Number, required: true }
+        }
+    ],
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 }, { timestamps: true });

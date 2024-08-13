@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { fetchCart } from './cartSlice';
 
 export const login = createAsyncThunk(
   "auth/login",
@@ -26,6 +27,12 @@ export const login = createAsyncThunk(
       localStorage.setItem("role", decodedToken.role);
       localStorage.setItem("id", decodedToken._id);
       console.log(decodedToken);
+
+      // as its backend, we need to set the token in the header for every request
+      localStorage.setItem('token', token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      dispatch(fetchCart());
+
       toast.success("Logged in successfully!");
       // this is action payload in react redux
       return { ...data, email: decodedToken.email, role: decodedToken.role, id: decodedToken._id };

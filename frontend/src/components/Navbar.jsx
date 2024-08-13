@@ -6,7 +6,7 @@ import { FaShoppingCart, FaRegUserCircle } from "react-icons/fa";
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../store/slices/authSlice';
-import { clearCart } from '../store/slices/cartSlice';
+import { removeFromCart } from '../store/slices/cartSlice';
 
 import { toast } from "react-toastify";
 
@@ -29,7 +29,7 @@ const Navbar = () => {
 
     const handleLogout = () => {
         dispatch(logout());
-        dispatch(clearCart());
+        dispatch(removeFromCart());
         localStorage.clear(); // Clear all local storage
         navigate('/');
         toast.success('Logged out successfully');
